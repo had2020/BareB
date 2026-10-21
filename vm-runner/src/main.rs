@@ -1,5 +1,24 @@
+pub enum reg_abi {
+    ZERO = 0,
+    RA = 1,
+    SP = 2,
+    GP = 3,
+    PC = 4,
+    T0 = 5,
+    T1 = 6,
+    T2 = 7,
+    S0 = 8,
+    S1 = 9,
+    S2 = 10,
+    S3 = 11,
+    A0 = 12,
+    A1 = 13,
+    T3 = 14,
+    T4 = 15,
+}
+
 // Instruction: [bits 4-7 arg1_reg][bits 0-3 arg0_reg], [bits 4-7 dist_reg][bits 0-3 Opcode]
-pub enum OP {
+pub enum op {
     MOV = 0b0000,
     NOT = 0b0001,
     AND = 0b0010,
