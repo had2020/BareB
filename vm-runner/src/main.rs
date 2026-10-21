@@ -1,20 +1,20 @@
 pub enum reg_abi {
-    ZERO = 0,
-    RA = 1,
-    SP = 2,
-    GP = 3,
-    PC = 4,
-    T0 = 5,
-    T1 = 6,
-    T2 = 7,
-    S0 = 8,
+    ZERO = 0, // constant zero
+    RA = 1,   // return address
+    SP = 2,   // stack pointer
+    GP = 3,   // global pointer
+    T0 = 4,   // temp
+    T1 = 5,
+    T2 = 6,
+    T3 = 7,
+    S0 = 8, // saved
     S1 = 9,
     S2 = 10,
     S3 = 11,
-    A0 = 12,
+    A0 = 12, // argument
     A1 = 13,
-    T3 = 14,
-    T4 = 15,
+    T5 = 14,
+    T6 = 15,
 }
 
 // Instruction: [bits 4-7 arg1_reg][bits 0-3 arg0_reg], [bits 4-7 dist_reg][bits 0-3 Opcode]
@@ -40,6 +40,7 @@ pub enum op {
 fn main() {
     // From compiled bytecode file
     let mem: usize = 16;
+    let mut pc = 0;
     let mut regs: [u64; 16];
     // Reg mapping: x0 = pc; perhaps do this in a enum
 }
