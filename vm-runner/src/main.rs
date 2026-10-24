@@ -1,3 +1,4 @@
+/*
 pub enum reg_abi {
     ZERO = 0, // constant zero
     RA = 1,   // return address
@@ -13,12 +14,12 @@ pub enum reg_abi {
     S3 = 11,
     A0 = 12, // argument
     A1 = 13,
-    T5 = 14,
+    T5 = 14, // temp
     T6 = 15,
-}
+}*/
 
 // Instruction: [bits 4-7 arg1_reg][bits 0-3 arg0_reg], [bits 4-7 dist_reg][bits 0-3 Opcode]
-pub enum op {
+pub enum OP {
     MOV = 0b0000,
     NOT = 0b0001,
     AND = 0b0010,
@@ -30,17 +31,29 @@ pub enum op {
     SUB = 0b1000,
     MUL = 0b1001,
     DIV = 0b1010,
-    POPCNT = 0b1011,
-    CLZ = 0b1100,
+    LOADSET = 0b1011,
+    SYSCALL = 0b1100,
     BLT = 0b1101,
     BGT = 0b1110,
-    BET = 0b1111,
+    IMM = 0b1111,
 }
 
 fn main() {
-    // From compiled bytecode file
-    let mem: usize = 16;
+    let mem_size: usize = 16; // From compiled bytecode file
+    let mut mem_vec: Vec<u8> = Vec::with_capacity(mem_size);
+    mem_vec.resize(mem_size, 0);
     let mut pc = 0;
-    let mut regs: [u64; 16];
-    // Reg mapping: x0 = pc; perhaps do this in a enum
+    let mut regs: [u64; 16] = [0_u64; 16];
+
+    loop {
+        let inst_part0 = mem_vec[pc];
+        let inst_part1 = mem_vec[pc+1]
+        let op = inst_part0 & 0b11110000;
+        let dist_reg = inst_part0 & 0b00001111;
+        let arg0_reg = inst_part1 & 0b11110000;
+        let arg1_reg = inst_part1 & 0b00001111;
+
+
+        pc += 2;
+    }
 }
