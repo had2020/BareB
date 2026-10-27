@@ -36,22 +36,22 @@ CallSuffix      = "(" , [ ArgList ] , ")" ;
 IndexSuffix     = "[" , Expression , "]" ;
 ArgList         = Expression , { "," , Expression } ;
 
-PrimaryExpr     = Identifier 
-                | IntegerLiteral 
-                | BooleanLiteral 
+PrimaryExpr     = Identifier
+                | IntegerLiteral
+                | BooleanLiteral
                 | "(" , Expression , ")" ;
 
 (* L-Values (Valid Assignment Targets) *)
-LValue          = Identifier 
-                | "*" , UnaryExpr 
+LValue          = Identifier
+                | "*" , UnaryExpr
                 | PostfixExpr , "[" , Expression , "]" ;
 
 (* Statements *)
-Statement       = VarDecl 
-                | Assignment 
-                | WhileStmt 
-                | IfStmt 
-                | ReturnStmt 
+Statement       = VarDecl
+                | Assignment
+                | WhileStmt
+                | IfStmt
+                | ReturnStmt
                 | ExprStmt ;
 
 VarDecl         = "let" , Identifier , ":" , Type , [ "=" , Expression ] , ";" ;
