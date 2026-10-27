@@ -1,0 +1,70 @@
+(* Lexical rules *)
+Letter          = "a" .. "z" | "A" .. "Z" | "_" ;
+Digit           = "0" .. "9" ;
+Keyword         = "fun" | "let" | "if" | "else" | "while" | "return" | "uint" | "bool" ;
+Identifier      = ( Letter , { Letter | Digit } ) - Keyword ;
+IntegerLiteral  = Digit , { Digit } ;
+BooleanLiteral  = "true" | "false" ;
+
+(* Types *)
+Type            = PrimitiveType | PointerType | ArrayType | Identifier ;
+PrimitiveType   = "uint" | "bool" ;
+PointerType     = "*" , [ "mut" ] , Type ;
+ArrayType       = "[" , Type , [ ";" , IntegerLiteral ] , "]" ;
+
+(* Expressions (Lowest to Highest Precedence) *)
+Expression      = LogicalOrExpr ;
+
+LogicalOrExpr   = LogicalAndExpr , { "||" , LogicalAndExpr } ;
+LogicalAndExpr  = BitwiseOrExpr , { "&&" , BitwiseOrExpr } ;
+BitwiseOrExpr   = BitwiseXorExpr , { "|" , BitwiseXorExpr } ;
+BitwiseXorExpr  = BitwiseAndExpr , { "^" , BitwiseAndExpr } ;
+BitwiseAndExpr  = EqualityExpr , { "&" , EqualityExpr } ;
+EqualityExpr    = RelationalExpr , { ( "==" | "!=" ) , RelationalExpr } ;
+RelationalExpr  = ShiftExpr , { ( "<" | "<=" | ">" | ">=" ) , ShiftExpr } ;
+ShiftExpr       = AdditiveExpr , { ( "<<" | ">>" ) , AdditiveExpr } ;
+AdditiveExpr    = MultiplicativeExpr , { ( "+" | "-" ) , MultiplicativeExpr } ;
+MultiplicativeExpr = UnaryExpr , { ( "*" | "/" | "%" ) , UnaryExpr } ;
+
+(* Unary: Address-of (&), Dereference (*), Negation (-), Logical NOT (!), Bitwise NOT (~) *)
+UnaryExpr       = ( "&" | "*" | "-" | "!" | "~" ) , UnaryExpr
+                | PostfixExpr ;
+
+(* Postfix: Calls f(...), Array/Buffer Indexing a[i] *)
+PostfixExpr     = PrimaryExpr , { CallSuffix | IndexSuffix } ;
+CallSuffix      = "(" , [ ArgList ] , ")" ;
+IndexSuffix     = "[" , Expression , "]" ;
+ArgList         = Expression , { "," , Expression } ;
+
+PrimaryExpr     = Identifier 
+                | IntegerLiteral 
+                | BooleanLiteral 
+                | "(" , Expression , ")" ;
+
+(* L-Values (Valid Assignment Targets) *)
+LValue          = Identifier 
+                | "*" , UnaryExpr 
+                | PostfixExpr , "[" , Expression , "]" ;
+
+(* Statements *)
+Statement       = VarDecl 
+                | Assignment 
+                | WhileStmt 
+                | IfStmt 
+                | ReturnStmt 
+                | ExprStmt ;
+
+VarDecl         = "let" , Identifier , ":" , Type , [ "=" , Expression ] , ";" ;
+Assignment      = LValue , "=" , Expression , ";" ;
+ExprStmt        = Expression , ";" ;
+WhileStmt       = "while" , Expression , Block ;
+IfStmt          = "if" , Expression , Block , [ "else" , ( Block | IfStmt ) ] ;
+ReturnStmt      = "return" , [ Expression ] , ";" ;
+
+(* Declarations & Program Structure *)
+FunctionDecl    = "fun" , Identifier , "(" , [ ParamList ] , ")" , [ "->" , Type ] , Block ;
+ParamList       = Param , { "," , Param } ;
+Param           = Identifier , ":" , Type ;
+Block           = "{" , { Statement } , "}" ;
+
+Program         = { FunctionDecl } ;

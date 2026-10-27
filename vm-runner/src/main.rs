@@ -1,3 +1,5 @@
+// Arch = BBareVM
+
 use std::io::{self, BufRead};
 use std::process::exit;
 
