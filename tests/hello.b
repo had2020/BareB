@@ -1,19 +1,33 @@
-uint add(a, b, _, _) { // A function can have up to 4 args.
+const THING = 670;
+
+###
+These are comments
+Also whitespace between tokens is required!
+###
+
+returns uint;
+param uint a;
+param uint b;
+fn add()
+{
     t0 = a + b;
     return t0;
 }
 
-main() {
-    param 5;
-    param 5;
-    t0 = call add;
+returns void;
+fn main()
+{
+    param 6;
+    param THING;
+    uint t0 = call add;
 
-    param t0;
-    call printf;
+    if ( t0 == 10 )
+    {
+        para t0;
+        call printf;
+    }
 
-    t1 = "hello\n";
+    uint[] t1 [5] = ["hello"];
     param t1;
     call printf;
-
-    return 0;
 }

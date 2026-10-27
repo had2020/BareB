@@ -62,9 +62,9 @@ fn main() {
     loop {
         let inst_part0: u8 = mem[pc];
         let inst_part1: u8 = mem[pc + 1];
-        let op: u8 = inst_part0 & 0b11110000;
+        let op: u8 = inst_part0 & 0b11110000 >> 4;
         let dist_reg: usize = (inst_part0 & 0b00001111) as usize;
-        let arg0_reg: usize = (inst_part1 & 0b11110000) as usize;
+        let arg0_reg: usize = (inst_part1 & 0b11110000) as usize >> 4;
         let arg1_reg: usize = (inst_part1 & 0b00001111) as usize;
 
         unsafe {
@@ -148,11 +148,13 @@ fn main() {
                         pc += dist_reg;
                     }
                 }
-                15 => pc += (regs[dist_reg] as usize) + arg0_reg + arg1_reg,
+                15 => {
+                    pc = regs[dist_reg] as usize;
+                }
                 _ => std::hint::unreachable_unchecked(),
             }
         }
-
+        regs[REG_ABI::ZERO as usize] = 0;
         pc += 2;
     }
 }
