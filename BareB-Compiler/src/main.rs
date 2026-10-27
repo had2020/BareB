@@ -2,13 +2,12 @@ use std::{env, path::Path, thread::scope};
 
 #[derive(Debug)]
 enum Tok {
-    Letter,
-    Digit,
     Ident { id_hash: u64 },
     FunSig { sig_hash: u64 },
     Parameter { id_hash: u64 },
     // keywords
     Const,
+    Let,
     If,
     Else,
     While,
@@ -52,6 +51,7 @@ enum TokType {
     Ident,
     Keyword,
     Value,
+    Assignment,
     Operation,
     Controller,
     Logical,
@@ -101,15 +101,17 @@ fn main() {
         let mut i: usize = 0;
 
         while i < text.len() && compile_pass {
-            if !text[i].is_ascii_whitespace() || !(text[i] != ';' as u8) {
-                tok_buf[tok_buf_ptr] = text[i];
-                if tok_buf_ptr < 16 {
-                    tok_buf_ptr += 1;
-                } else {
-                    println!("Compile Error: Words must be smaller than 16 chars!");
-                    compile_pass = false;
+            if !text[i].is_ascii_whitespace() {
+                if text[i] != ';' as u8 {
+                    tok_buf[tok_buf_ptr] = text[i];
+                    if tok_buf_ptr < 16 {
+                        tok_buf_ptr += 1;
+                    } else {
+                        println!("Compile Error: Words must be smaller than 16 chars!");
+                        compile_pass = false;
+                    }
+                    print!("{} ", text[i] as char); // debug reading
                 }
-                print!("{} ", text[i] as char); // debug reading
             } else if expected == TokType::Some {
                 let cur_hash = hash_u8s(tok_buf, tok_buf_ptr);
                 // I know this is ugly deal with it!
@@ -118,11 +120,11 @@ fn main() {
                     expected = TokType::Ident;
                 } else if cur_hash == hash_str("returns") {
                     expected = TokType::ReturnType;
-                } else if cur_hash == hash_str("=") {
-                    toks.push(Tok::Assign);
-                    expected = TokType::Value;
                 } else if cur_hash == hash_str("###") {
                     expected = TokType::CommentClose;
+                } else if cur_hash == hash_str("let") {
+                    toks.push(Tok::Let);
+                    expected = TokType::Ident;
                 }
                 /*
                 } else {
@@ -148,22 +150,34 @@ fn main() {
                     id_hash: hash_u8s(tok_buf, tok_buf_ptr),
                 });
 
-                expected = TokType::Value;
+                expected = TokType::Assignment;
                 tok_buf = [0; 16];
                 tok_buf_ptr = 0;
                 // Would'nt you expect a value after a symbol?
+            } else if expected == TokType::Assignment {
+                if hash_u8s(tok_buf, tok_buf_ptr) == hash_str("=") {
+                    toks.push(Tok::Assign);
+                    expected = TokType::Value;
+                }
+                tok_buf = [0; 16];
+                tok_buf_ptr = 0;
             } else if expected == TokType::Value {
-                let mut i_cpy = i;
-                i_cpy += 1;
+                let mut i_cpy = i - (tok_buf_ptr + 1);
+                /*
+                println!("checking {}", text[i_cpy] as char);
+                println!("buf: {:?}", tok_buf);
+                println!("buf_ptr: {}", tok_buf_ptr);*/
                 if text[i_cpy].is_ascii_alphabetic() {
                     toks.push(Tok::Ident {
                         id_hash: hash_u8s(tok_buf, tok_buf_ptr),
                     });
+                    expected = TokType::Some;
                 } else if text[i_cpy].is_ascii_digit() {
                     let mut pending: Vec<u8> = Vec::new();
                     let mut literal: u64 = 0;
                     let mut j: usize = 1;
                     while j <= 16 {
+                        //println!("from value check: {}", text[i_cpy] as char);
                         if (text[i_cpy] as char).is_ascii_digit() {
                             pending.push(
                                 (text[i_cpy] as char)
@@ -171,23 +185,29 @@ fn main() {
                                     .expect("lexical literal parse fail!")
                                     as u8,
                             );
+                        } else {
+                            j = 17;
                         }
                         i_cpy += 1;
                         j += 1;
                     }
-                    i += pending.len();
+                    i += pending.len() - 1;
                     for &digit in &pending {
                         literal = literal * 10 + digit as u64;
                     }
                     toks.push(Tok::UintLiteral { uint: literal });
-                } else if text[i] == '[' as u8 {
+                    expected = TokType::Some;
+                    //println!("{:?}", pending);
+                } else if text[i_cpy] == '[' as u8 {
                     todo!("arrays and strings");
-                } else {
+                } else if !(text[i_cpy].is_ascii_whitespace()) {
                     compile_pass = false;
-                    println!("Compile failed expected a Literal or Identifer!")
+                    println!(
+                        "Compile failed expected a Literal or Identifer! '{}'",
+                        text[i] as char
+                    )
                 }
 
-                expected = TokType::Some;
                 tok_buf = [0; 16];
                 tok_buf_ptr = 0;
             } else if expected == TokType::CommentClose {
@@ -217,11 +237,6 @@ fn main() {
                     expected = TokType::ParamIdent;
                 } else if cur_hash == hash_str("fn") {
                     expected = TokType::FnIdent;
-                } else {
-                    println!(
-                        "Compile failed after defining a return type you must ethier: define params or a fn!"
-                    );
-                    compile_pass = false;
                 }
                 tok_buf = [0; 16];
                 tok_buf_ptr = 0;
@@ -240,10 +255,11 @@ fn main() {
                 tok_buf = [0; 16];
                 tok_buf_ptr = 0;
             }
+            //println!("{:?}", expected);
 
             i += 1;
         }
-        println!("Compiled: {:?}", toks);
+        println!("Tokens: {:?}", toks);
     } else {
         println!("Enter filename as arg!");
     }
