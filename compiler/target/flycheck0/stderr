@@ -1,3 +1,4 @@
-    Blocking waiting for file lock on package cache
-    Blocking waiting for file lock on package cache
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
+    Checking compiler v0.1.0 (/Users/hadrian/Developer/GitRepos/BareB/compiler)
+error: could not compile `compiler` (bin "compiler" test) due to 1 previous error; 1 warning emitted
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `compiler` (bin "compiler") due to 1 previous error; 1 warning emitted
