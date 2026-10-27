@@ -1,4 +1,4 @@
 fun main() {
     let a = 0;
-    print("Hello World");
+    print("Hello World\n");
 }

@@ -19,7 +19,7 @@ pub enum REG_ABI {
     A0 = 12, // arguments
     A1 = 13,
     A2 = 14,
-    T6 = 15, // temps
+    A3 = 15,
 }
 
 // Instruction: [bits 4-7 arg1_reg][bits 0-3 arg0_reg], [bits 4-7 dist_reg][bits 0-3 Opcode]

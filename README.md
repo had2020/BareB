@@ -1,3 +1,3 @@
 # BareB
 
-'.bb' file extension is used.
+'.b' file extension is used.
