@@ -16,6 +16,7 @@ enum Tok {
     Void,
     Uint,
     UintArray,
+    AtAddr,
     // literals
     UintLiteral { uint: u64 },
     // operators
@@ -25,7 +26,7 @@ enum Tok {
     Slash,
     Mod,
     Assign,
-    // controllers
+    // scoped
     LCurly,
     RCurly,
     // bitwise
@@ -147,7 +148,22 @@ fn main() {
                     expected = TokType::Ident;
                 } else if cur_hash == hash_str("|") {
                     toks.push(Tok::BitwiseOr);
-                    expected = Tok
+                    expected = TokType::Ident;
+                } else if cur_hash == hash_str("&") {
+                    toks.push(Tok::BitwiseAnd);
+                    expected = TokType::Ident;
+                } else if cur_hash == hash_str("^") {
+                    toks.push(Tok::BitwiseXor);
+                    expected = TokType::Ident;
+                } else if cur_hash == hash_str("<<") {
+                    toks.push(Tok::BitShiftLeft);
+                    expected = TokType::Ident;
+                } else if cur_hash == hash_str(">>") {
+                    toks.push(Tok::BitShiftRight);
+                    expected = TokType::Ident;
+                } else if cur_hash == hash_str("@") {
+                    toks.push(Tok::AtAddr);
+                    expected = TokType::Ident;
                 }
 
                 /*
