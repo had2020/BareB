@@ -83,7 +83,7 @@ pub fn hash_str(s: &str) -> u64 {
 }
 
 fn main() {
-    // cargo run /Users/hadrian/Developer/GitRepos/BareB/tests/hello_world.bb BBareVM
+    // cargo run /Users/hadrian/Developer/GitRepos/BareB/tests/hello.b BBareVM
     if env::args().len() > 1 {
         let filepath: String = env::args().nth(1).expect("Failed to specfiy filepath!");
         let arch: String = env::args().nth(2).expect("Failed to specfiy arch!");
@@ -99,6 +99,8 @@ fn main() {
 
         let mut compile_pass: bool = true;
         let mut i: usize = 0;
+
+        // TODO operations...
 
         while i < text.len() && compile_pass {
             if !text[i].is_ascii_whitespace() {
@@ -120,13 +122,11 @@ fn main() {
                     expected = TokType::Ident;
                 } else if cur_hash == hash_str("returns") {
                     expected = TokType::ReturnType;
-                } else if cur_hash == hash_str("###") {
+                } else if cur_hash == hash_str("/*") {
                     expected = TokType::CommentClose;
                 } else if cur_hash == hash_str("let") {
                     toks.push(Tok::Let);
                     expected = TokType::Ident;
-                }
-                /*
                 } else {
                     // Debuging ONLY!
                     let mut debug_line = String::new();
@@ -140,7 +140,7 @@ fn main() {
                         hash_u8s(tok_buf, tok_buf_ptr),
                         toks,
                     )
-                }*/
+                }
 
                 tok_buf = [0; 16];
                 tok_buf_ptr = 0;
@@ -162,7 +162,7 @@ fn main() {
                 tok_buf = [0; 16];
                 tok_buf_ptr = 0;
             } else if expected == TokType::Value {
-                let mut i_cpy = i - (tok_buf_ptr + 1);
+                let mut i_cpy = i.clone() - (tok_buf_ptr + 1);
                 /*
                 println!("checking {}", text[i_cpy] as char);
                 println!("buf: {:?}", tok_buf);
@@ -191,7 +191,7 @@ fn main() {
                         i_cpy += 1;
                         j += 1;
                     }
-                    i += pending.len() - 1;
+                    //i += pending.len() - 1; // this moved my i pointer to far
                     for &digit in &pending {
                         literal = literal * 10 + digit as u64;
                     }
@@ -211,7 +211,7 @@ fn main() {
                 tok_buf = [0; 16];
                 tok_buf_ptr = 0;
             } else if expected == TokType::CommentClose {
-                if hash_u8s(tok_buf, tok_buf_ptr) == hash_str("###") {
+                if hash_u8s(tok_buf, tok_buf_ptr) == hash_str("*/") {
                     expected = TokType::Some;
                     tok_buf = [0; 16];
                     tok_buf_ptr = 0;

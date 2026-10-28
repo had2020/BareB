@@ -1,9 +1,10 @@
 const THING = 6707;
 
-###
+/*
 These are comments
 Also whitespace between tokens is required!
-###
+const SHOULDNOTEXIST here;
+*/
 
 returns uint;
 param a;
