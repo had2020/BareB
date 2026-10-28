@@ -127,7 +127,31 @@ fn main() {
                 } else if cur_hash == hash_str("let") {
                     toks.push(Tok::Let);
                     expected = TokType::Ident;
-                } else {
+                } else if cur_hash == hash_str("+") {
+                    toks.push(Tok::Plus);
+                    expected = TokType::Ident;
+                } else if cur_hash == hash_str("-") {
+                    toks.push(Tok::Minus);
+                    expected = TokType::Ident;
+                } else if cur_hash == hash_str("*") {
+                    toks.push(Tok::Star);
+                    expected = TokType::Ident;
+                } else if cur_hash == hash_str("/") {
+                    toks.push(Tok::Slash);
+                    expected = TokType::Ident;
+                } else if cur_hash == hash_str("%") {
+                    toks.push(Tok::Mod);
+                    expected = TokType::Ident;
+                } else if cur_hash == hash_str("!") {
+                    toks.push(Tok::BitwiseNot);
+                    expected = TokType::Ident;
+                } else if cur_hash == hash_str("|") {
+                    toks.push(Tok::BitwiseOr);
+                    expected = Tok
+                }
+
+                /*
+                else {
                     // Debuging ONLY!
                     let mut debug_line = String::new();
                     for j in tok_buf {
@@ -140,7 +164,7 @@ fn main() {
                         hash_u8s(tok_buf, tok_buf_ptr),
                         toks,
                     )
-                }
+                }*/
 
                 tok_buf = [0; 16];
                 tok_buf_ptr = 0;
